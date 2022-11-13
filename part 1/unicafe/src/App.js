@@ -10,32 +10,36 @@ const Button = ({handleClick, text}) => {
 
 const StatisticLine = ({text, value, unit}) => {
   return (
-    <div>
-      {text} {value} {unit}
-    </div>
+    <tr>
+      <td>{text}</td>
+      <td>{value} {unit}</td>
+    </tr>
   )
 }
 
 const Statistics = ({good, neutral, bad}) => {
   let total = good + neutral + bad
-  let avg = (good - bad) / total
-  let positive = good / total
+  let avg = Math.round((good - bad) / total*100)/100
+  let positive = Math.round((good / total)*100)/100
   if (total === 0) {
     return (
-      <div>
+      <>
         No feedback given
-      </div>
+      </>
     )
   }
   return (
-    <div>
-      <StatisticLine text="good" value={good} unit="" />
-      <StatisticLine text="neutral" value={neutral} unit="" />
-      <StatisticLine text="bad" value={bad} unit="" />
-      <StatisticLine text="all" value={total} unit="" />
-      <StatisticLine text="average" value={avg} unit="" />
-      <StatisticLine text="positive" value={positive} unit="%" />
-    </div>
+    <table>
+      <tbody>
+        <StatisticLine text="good" value={good} unit="" />
+        <StatisticLine text="neutral" value={neutral} unit="" />
+        <StatisticLine text="bad" value={bad} unit="" />
+        <StatisticLine text="all" value={total} unit="" />
+        <StatisticLine text="average" value={avg} unit="" />
+        <StatisticLine text="positive" value={positive} unit="%" />
+      </tbody>
+    </table>
+    
   )
 }
 
