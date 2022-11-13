@@ -30,14 +30,24 @@ const App = () => {
     setPoints(copy)
   }
 
+  const findMaxPoints = () => {
+    const max_value = Math.max(...points)
+    const idx = points.indexOf(max_value)
+    return (idx)
+  }
+
   return (
     <div>
+      <h1>Anecdote of the day</h1>
       <p>{anecdotes[selected]}</p>
       has {points[selected]} votes
       <p>
         <button onClick={() => pickAnecdote(anecdotes.length)}>next anecdote</button>
         <button onClick={() => handleVote(selected)}>vote</button>
       </p>
+      <h1>Anecdote with the most votes</h1>
+      <p>{anecdotes[findMaxPoints()]}</p>
+      has {points[findMaxPoints()]} votes
     </div>
   )
 }
