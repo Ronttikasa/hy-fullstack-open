@@ -35,6 +35,7 @@ const ShowCountry = ({country}) => {
           </ul>
         </div>
         <ShowFlag country={country} />
+        <ShowWeather country={country} />
       </div>
   )
 }
@@ -50,8 +51,6 @@ const ShowFlag = ({country}) => {
 }
 
 const ShowFilterResult = ({countries, handler, countryToShow}) => {
-  // console.log(countries)
-  // console.log(countryToShow)
   if (countryToShow) {
     return (
       <ShowCountry country={countryToShow} />
@@ -75,6 +74,34 @@ const ShowFilterResult = ({countries, handler, countryToShow}) => {
     </div>
     )
   }
+}
+
+const ShowWeather = ({country}) => {
+  const [weather, setWeather] = useState()
+
+  const weatherAPI = process.env.REACT_APP_WEATHER_API_KEY
+  let lat = country.capitalInfo.latlng[0]
+  let lon = country.capitalInfo.latlng[1]
+
+  useEffect(() => {
+    axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${weatherAPI}&units=metric`)
+      .then(response => {
+        setWeather(response.data)
+      })
+    }, [])
+
+  if (!weather) {
+    return null
+  } else {
+    return (
+
+      <div>
+        <h2>Weather in {country.capital}</h2>
+        Temperature {weather.main.temp} Celsius <br />
+        <img src={`http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`} /> <br />
+        Wind {weather.wind.speed} m/s
+      </div>
+  )}
 }
 
 const App = () => {
