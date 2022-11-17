@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-
 import axios from 'axios'
 
 const FilterForm = ({text, handler}) => {
@@ -13,19 +12,33 @@ const FilterForm = ({text, handler}) => {
   )
 }
 
-const ShowCountryName = ({country}) => {
+const ShowCountryName = ({country, handler}) => {
   return (
     <div>
-      {country.name.common}
+      {country.name.common} <button onClick={() => handler(country)}>show</button>
     </div>
   )
 }
 
 const ShowCountry = ({country}) => {
   return (
-    <h2>{country.name.common}</h2>
+    <div>
+        <h2>{country.name.common}</h2>
+        <p>
+          capital {country.capital} <br />
+          area {country.area}
+        </p>
+        <h3>languages:</h3>
+        <div>
+          <ul>
+            {Object.values(country.languages).map(language => <li key={language}>{language}</li>)}
+          </ul>
+        </div>
+        <ShowFlag country={country} />
+      </div>
   )
 }
+
 
 const ShowFlag = ({country}) => {
   const flagURL = country.flags.png
@@ -36,8 +49,14 @@ const ShowFlag = ({country}) => {
   )
 }
 
-const ShowFilterResult = ({countries}) => {
-  if (countries.length > 10) {
+const ShowFilterResult = ({countries, handler, countryToShow}) => {
+  // console.log(countries)
+  // console.log(countryToShow)
+  if (countryToShow) {
+    return (
+      <ShowCountry country={countryToShow} />
+    )
+  } else if (countries.length > 10) {
     return (
       <div>
         Too many matches
@@ -46,25 +65,13 @@ const ShowFilterResult = ({countries}) => {
   } else if (countries.length === 1) {
     const country = countries[0]
     return (
-      <div>
-        <ShowCountry country={country} />
-        <p>
-          capital {country.capital} <br />
-          area {country.area}
-        </p>
-        <h3>languages:</h3>
-        <div>
-          <ul>
-            {Object.values(country.languages).map(language => <li>{language}</li>)}
-          </ul>
-        </div>
-        <ShowFlag country={country} />
-      </div>
+      <ShowCountry country={country} />
     )
   } else {
     return (
     <div>
-      {countries.map(country => <ShowCountryName key={country.name.official} country={country} />)}
+      {countries.map(country =>
+        <ShowCountryName key={country.name.official} country={country} handler={handler} />)}
     </div>
     )
   }
@@ -73,9 +80,9 @@ const ShowFilterResult = ({countries}) => {
 const App = () => {
   const [countries, setCountries] = useState([])
   const [filterString, setFilterString] = useState('')
+  const [countryToShow, setCountryToShow] = useState(null)
 
   useEffect(() => {
-    console.log('effect...')
     axios.get('https://restcountries.com/v3.1/all')
       .then(response => {
         setCountries(response.data)
@@ -84,6 +91,7 @@ const App = () => {
 
   const handleFilterChange = (event) => {
     setFilterString(event.target.value)
+    setCountryToShow(null)
   }
 
   const countriesToShow = filterString
@@ -94,7 +102,10 @@ const App = () => {
 return (
   <div>
     <FilterForm text={filterString} handler={handleFilterChange} />
-    <ShowFilterResult countries={countriesToShow} />
+    <ShowFilterResult 
+      countries={countriesToShow} 
+      handler={setCountryToShow} 
+      countryToShow={countryToShow} />
   </div>)
 }
 
